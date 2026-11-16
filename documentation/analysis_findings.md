@@ -102,3 +102,23 @@ Identify repeated transaction records by checking whether multiple records share
 
 ### Business Insight
 Repeated transaction patterns, particularly those involving fraudulent transactions, may warrant further investigation
+
+## 6. Sequential Transaction Analysis
+
+### Objective
+Examine consecutive transaction records to understand how transaction amounts change over time.
+
+### Approach
+- Used the `LAG()` window function to retrieve the previous transaction's amount.
+- Ordered transactions by the `Time` column.
+- Calculated the difference between the current and previous transaction amounts.
+- Examined the first 20 records to understand the output.
+
+### Findings
+- Transaction amounts varied significantly between consecutive records.
+- Some consecutive transactions showed substantial increases or decreases in amounts.
+- The first transaction had no previous transaction, so its previous amount and amount difference were NULL.
+- The analysis demonstrated how window functions can be used to compare records without collapsing them into aggregate results.
+
+### Business Insight
+Comparing consecutive transaction amounts can help explore potential changes in transaction behaviour. Large differences may be useful indicators for further
