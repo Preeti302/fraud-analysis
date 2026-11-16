@@ -82,3 +82,23 @@ Analyze fraudulent transaction patterns across different transaction amount rang
 Although lower-value transactions accounted for the largest number of fraud cases, the $500–$999 range had the highest proportion of fraudulent transactions. This suggests that transaction amount may be a useful factor when investigating fraud patterns.
 
 **Note:** These findings show associations within the dataset and do not establish that transaction amount causes fraudulent activity.
+
+## 5. Duplicate Transaction Investigation
+
+### Objective
+Identify repeated transaction records by checking whether multiple records share the same transaction time, amount, and fraud classification.
+
+### Approach
+- Grouped transactions using the `Time`, `Amount`, and `Class` columns.
+- Used `COUNT(*)` to count occurrences of each combination.
+- Used `HAVING COUNT(*) > 1` to identify repeated combinations.
+- Sorted results by transaction count in descending order.
+
+### Findings
+- Multiple transaction combinations appeared repeatedly in the dataset.
+- Some legitimate transaction combinations appeared up to 18 times.
+- A fraudulent transaction combination (`Time = 68207`, `Amount = $1.00`, `Class = 1`) appeared 6 times.
+- Repeated combinations were also observed among low-value transactions.
+
+### Business Insight
+Repeated transaction patterns, particularly those involving fraudulent transactions, may warrant further investigation
