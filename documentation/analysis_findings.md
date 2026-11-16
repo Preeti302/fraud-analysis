@@ -25,6 +25,14 @@
 - Several consecutive records occurred within 1–3 seconds of each other.
 - Short time gaps alone cannot establish suspicious activity because the dataset does not contain customer IDs.
 
+### High-Value Transaction Analysis
+- Used the `RANK()` window function to rank transactions by amount in descending order.
+- Examined the 20 highest-value transactions.
+- All 20 transactions were classified as legitimate.
+- The highest transaction amount was $25,691.16.
+
+**Business Insight:** High transaction amounts do not necessarily indicate fraudulent activity. Transaction value should be evaluated alongside other behavioural and transaction-level indicators.
+
 ## SQL Techniques Used
 
 - Aggregations: `COUNT()`, `SUM()`, `AVG()`
