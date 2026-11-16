@@ -20,6 +20,11 @@
 - Transaction amounts varied between consecutive records.
 - This demonstrates how window functions can help investigate transaction sequences.
 
+### Transaction Time Gaps
+- Used the `LAG()` window function to calculate elapsed seconds between consecutive transaction records.
+- Several consecutive records occurred within 1–3 seconds of each other.
+- Short time gaps alone cannot establish suspicious activity because the dataset does not contain customer IDs.
+
 ## SQL Techniques Used
 
 - Aggregations: `COUNT()`, `SUM()`, `AVG()`
