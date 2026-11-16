@@ -39,3 +39,83 @@ SELECT
         / COUNT(*), 3
     ) AS fraud_percentage
 FROM credit_card_transactions;
+
+
+
+-- =====================================================
+-- SECTION 2: FRAUD PATTERN ANALYSIS
+-- =====================================================
+
+-- 2.1 Fraud distribution by transaction amount range
+
+SELECT
+    CASE
+        WHEN Amount < 50 THEN 'Below $50'
+        WHEN Amount < 100 THEN '$50-$99'
+        WHEN Amount < 500 THEN '$100-$499'
+        WHEN Amount < 1000 THEN '$500-$999'
+        ELSE '$1000+'
+    END AS amount_range,
+    Class,
+    COUNT(*) AS transaction_count
+FROM credit_card_transactions
+GROUP BY amount_range, Class
+ORDER BY
+    CASE
+        WHEN Amount < 50 THEN 1
+        WHEN Amount < 100 THEN 2
+        WHEN Amount < 500 THEN 3
+        WHEN Amount < 1000 THEN 4
+        ELSE 5
+    END,
+    Class;
+
+
+-- 2.2 Fraud rate by transaction amount range
+
+SELECT
+    CASE
+        WHEN Amount < 50 THEN 'Below $50'
+        WHEN Amount < 100 THEN '$50-$99'
+        WHEN Amount < 500 THEN '$100-$499'
+        WHEN Amount < 1000 THEN '$500-$999'
+        ELSE '$1000+'
+    END AS amount_range,
+    COUNT(*) AS total_transactions,
+    SUM(CASE WHEN Class = 1 THEN 1 ELSE 0 END) AS fraud_count,
+    ROUND(
+        100.0 * SUM(CASE WHEN Class = 1 THEN 1 ELSE 0 END)
+        / COUNT(*), 3
+    ) AS fraud_rate
+FROM credit_card_transactions
+GROUP BY amount_range
+ORDER BY MIN(Amount);
+
+
+-- 2.3 Fraud analysis by transaction hour
+
+SELECT
+    FLOOR(Time / 3600) AS transaction_hour,
+    COUNT(*) AS total_transactions,
+    SUM(CASE WHEN Class = 1 THEN 1 ELSE 0 END) AS fraud_count,
+    ROUND(
+        100.0 * SUM(CASE WHEN Class = 1 THEN 1 ELSE 0 END)
+        / COUNT(*), 3
+    ) AS fraud_rate
+FROM credit_card_transactions
+GROUP BY transaction_hour
+ORDER BY transaction_hour;
+
+
+-- 2.4 Compare legitimate and fraudulent transactions
+
+SELECT
+    Class,
+    COUNT(*) AS total_transactions,
+    ROUND(AVG(Amount), 2) AS avg_amount,
+    ROUND(AVG(Time), 2) AS avg_transaction_time,
+    MIN(Time) AS first_transaction_time,
+    MAX(Time) AS last_transaction_time
+FROM credit_card_transactions
+GROUP BY Class
+ORDER BY Class;
