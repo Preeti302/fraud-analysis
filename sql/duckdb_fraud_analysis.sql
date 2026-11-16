@@ -182,3 +182,22 @@ FROM credit_card_transactions
 ORDER BY Amount DESC
 LIMIT 20;
 
+
+
+-- =====================================================
+-- SECTION 4: DUPLICATE TRANSACTION INVESTIGATION
+-- =====================================================
+
+SELECT
+    Time,
+    Amount,
+    Class,
+    COUNT(*) AS transaction_count
+FROM credit_card_transactions
+GROUP BY
+    Time,
+    Amount,
+    Class
+HAVING COUNT(*) > 1
+ORDER BY transaction_count DESC;
+
