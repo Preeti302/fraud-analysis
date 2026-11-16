@@ -60,15 +60,7 @@ SELECT
     COUNT(*) AS transaction_count
 FROM credit_card_transactions
 GROUP BY amount_range, Class
-ORDER BY
-    CASE
-        WHEN Amount < 50 THEN 1
-        WHEN Amount < 100 THEN 2
-        WHEN Amount < 500 THEN 3
-        WHEN Amount < 1000 THEN 4
-        ELSE 5
-    END,
-    Class;
+    ORDER BY MIN(Amount), Class;
 
 
 -- 2.2 Fraud rate by transaction amount range
@@ -138,15 +130,14 @@ HAVING COUNT(*) > 1
 ORDER BY transaction_count DESC;
 
 
--- 3.2 Retrieve previous transaction amount using LAG()
+-- 3.2 Sequential transaction analysis using LAG()
 
 SELECT
     Time,
     Amount,
     Class,
-    LAG(Amount) OVER (
-        ORDER BY Time
-    ) AS previous_amount
+    LAG(Amount) OVER (ORDER BY Time) AS previous_amount,
+    Amount - LAG(Amount) OVER (ORDER BY Time) AS amount_difference
 FROM credit_card_transactions
 ORDER BY Time
 LIMIT 20;
@@ -181,40 +172,3 @@ SELECT
 FROM credit_card_transactions
 ORDER BY Amount DESC
 LIMIT 20;
-
-
-
--- =====================================================
--- SECTION 4: DUPLICATE TRANSACTION INVESTIGATION
--- =====================================================
-
-SELECT
-    Time,
-    Amount,
-    Class,
-    COUNT(*) AS transaction_count
-FROM credit_card_transactions
-GROUP BY
-    Time,
-    Amount,
-    Class
-HAVING COUNT(*) > 1
-ORDER BY transaction_count DESC;
-
-
-
--- =====================================================
--- SECTION 5: SEQUENTIAL TRANSACTION ANALYSIS
--- =====================================================
-
-SELECT
-    Time,
-    Amount,
-    Class,
-    LAG(Amount) OVER (ORDER BY Time) AS previous_amount,
-    Amount - LAG(Amount) OVER (ORDER BY Time) AS amount_difference
-FROM credit_card_transactions
-ORDER BY Time
-LIMIT 20;
-
-
