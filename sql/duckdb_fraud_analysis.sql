@@ -201,3 +201,20 @@ GROUP BY
 HAVING COUNT(*) > 1
 ORDER BY transaction_count DESC;
 
+
+
+-- =====================================================
+-- SECTION 5: SEQUENTIAL TRANSACTION ANALYSIS
+-- =====================================================
+
+SELECT
+    Time,
+    Amount,
+    Class,
+    LAG(Amount) OVER (ORDER BY Time) AS previous_amount,
+    Amount - LAG(Amount) OVER (ORDER BY Time) AS amount_difference
+FROM credit_card_transactions
+ORDER BY Time
+LIMIT 20;
+
+
