@@ -1,124 +1,43 @@
-### Transaction Time Analysis
+## Key Findings
 
-The transaction dataset was divided into eight intervals of six hours each using the Time column.
+### Transaction Time
+- Fraud rates varied across the eight six-hour intervals.
+- Interval 4 recorded the highest fraud rate (0.595%), while Interval 5 recorded the lowest (0.075%).
+- This suggests fraud activity was not evenly distributed across the observed period.
 
-Key observations:
+### Transaction Amount
+- The $500–$999 range recorded the highest fraud rate (0.405%).
+- Transactions below $50 accounted for the highest number of fraud cases (305), largely because this range contained the most transactions.
+- Fraud rates did not consistently increase with transaction amounts.
 
-- Interval 1 recorded the highest number of fraudulent transactions (91).
-- Interval 4 recorded the highest fraud rate (0.595%).
-- Interval 5 recorded the lowest fraud rate (0.075%).
-- Fraud rates varied across different elapsed-time intervals.
+### Repeated Transaction Patterns
+- Multiple records shared identical transaction times, amounts and fraud classifications.
+- One fraudulent combination involving a $1.00 transaction appeared six times.
+- These repeated records may warrant further investigation, but cannot be confirmed as duplicate payments.
 
-**Business observation:** Fraudulent transactions are not distributed uniformly across the dataset's time intervals. Certain intervals show higher fraud rates and may warrant additional investigation.
+### Sequential Transaction Analysis
+- Used the SQL `LAG()` window function to compare consecutive transaction amounts.
+- Transaction amounts varied between consecutive records.
+- This demonstrates how window functions can help investigate transaction sequences.
 
-Note: Time represents elapsed seconds from the first transaction, not actual time of day.
+## SQL Techniques Used
 
-## 3. Transaction Time Analysis
+- Aggregations: `COUNT()`, `SUM()`, `AVG()`
+- Conditional logic: `CASE WHEN`
+- Grouping and filtering: `GROUP BY`, `HAVING`
+- Window functions: `LAG()`, `RANK()`
+- Sorting and ranking: `ORDER BY`
 
-### Objective
-Analyze fraudulent transaction patterns across different time intervals to identify periods with higher fraud activity.
+## Limitations
 
-### Approach
-- Used the `Time` column, which represents elapsed seconds since the first transaction.
-- Divided the dataset into eight intervals of six hours each.
-- Compared legitimate and fraudulent transaction counts.
-- Calculated fraud percentages within each interval.
+- The dataset does not contain customer IDs or unique transaction IDs.
+- The `Time` column represents elapsed seconds from the first transaction, not actual clock time.
+- Consecutive transactions may belong to different customers.
+- Repeated transaction combinations cannot be confirmed as duplicate payments.
 
-### Findings
+## Business Takeaways
 
-| Time Interval | Total Transactions | Fraud Transactions | Fraud Rate |
-|---|---:|---:|---:|
-| 0 | 12,340 | 55 | 0.446% |
-| 1 | 35,061 | 91 | 0.260% |
-| 2 | 46,850 | 71 | 0.152% |
-| 3 | 50,535 | 64 | 0.127% |
-| 4 | 11,594 | 69 | 0.595% |
-| 5 | 35,851 | 27 | 0.075% |
-| 6 | 49,585 | 63 | 0.127% |
-| 7 | 42,991 | 52 | 0.121% |
-
-### Key Observations
-
-1. Interval 1 recorded the highest number of fraudulent transactions (91).
-2. Interval 4 recorded the highest fraud rate (0.595%).
-3. Interval 5 recorded the lowest fraud rate (0.075%).
-4. Fraud rates varied across the eight intervals.
-
-### Business Insight
-Fraudulent transactions are not distributed uniformly across the observed time intervals. Interval 4 showed a higher fraud rate despite having fewer total transactions than most other intervals.
-
-These patterns may warrant further investigation but do not establish a causal relationship between transaction time and fraud.
-
-**Note:** The dataset covers approximately 48 hours. The `Time` column represents elapsed seconds, not actual clock time.
-
-
-## 4. Transaction Amount Analysis
-
-### Objective
-Analyze fraudulent transaction patterns across different transaction amount ranges to identify whether certain amounts have higher fraud rates.
-
-### Approach
-- Grouped transactions into five amount ranges.
-- Calculated total transactions and fraudulent transactions within each range.
-- Compared fraud rates across the amount ranges.
-
-### Findings
-
-| Amount Range | Total Transactions | Fraud Transactions | Fraud Rate |
-|---|---:|---:|---:|
-| Below $50 | 189,704 | 305 | 0.161% |
-| $50–$99 | 37,718 | 57 | 0.151% |
-| $100–$499 | 47,893 | 95 | 0.198% |
-| $500–$999 | 6,423 | 26 | 0.405% |
-| $1,000+ | 3,069 | 9 | 0.293% |
-
-### Key Observations
-1. Transactions below $50 recorded the highest number of fraudulent transactions (305).
-2. The $500–$999 range recorded the highest fraud rate (0.405%).
-3. The $1,000+ range had a lower fraud rate (0.293%) than the $500–$999 range.
-4. Fraud rates did not increase consistently with transaction amounts.
-
-### Business Insight
-Although lower-value transactions accounted for the largest number of fraud cases, the $500–$999 range had the highest proportion of fraudulent transactions. This suggests that transaction amount may be a useful factor when investigating fraud patterns.
-
-**Note:** These findings show associations within the dataset and do not establish that transaction amount causes fraudulent activity.
-
-## 5. Duplicate Transaction Investigation
-
-### Objective
-Identify repeated transaction records by checking whether multiple records share the same transaction time, amount, and fraud classification.
-
-### Approach
-- Grouped transactions using the `Time`, `Amount`, and `Class` columns.
-- Used `COUNT(*)` to count occurrences of each combination.
-- Used `HAVING COUNT(*) > 1` to identify repeated combinations.
-- Sorted results by transaction count in descending order.
-
-### Findings
-- Multiple transaction combinations appeared repeatedly in the dataset.
-- Some legitimate transaction combinations appeared up to 18 times.
-- A fraudulent transaction combination (`Time = 68207`, `Amount = $1.00`, `Class = 1`) appeared 6 times.
-- Repeated combinations were also observed among low-value transactions.
-
-### Business Insight
-Repeated transaction patterns, particularly those involving fraudulent transactions, may warrant further investigation
-
-## 6. Sequential Transaction Analysis
-
-### Objective
-Examine consecutive transaction records to understand how transaction amounts change over time.
-
-### Approach
-- Used the `LAG()` window function to retrieve the previous transaction's amount.
-- Ordered transactions by the `Time` column.
-- Calculated the difference between the current and previous transaction amounts.
-- Examined the first 20 records to understand the output.
-
-### Findings
-- Transaction amounts varied significantly between consecutive records.
-- Some consecutive transactions showed substantial increases or decreases in amounts.
-- The first transaction had no previous transaction, so its previous amount and amount difference were NULL.
-- The analysis demonstrated how window functions can be used to compare records without collapsing them into aggregate results.
-
-### Business Insight
-Comparing consecutive transaction amounts can help explore potential changes in transaction behaviour. Large differences may be useful indicators for further
+- Fraud rates can vary across transaction time and amount ranges.
+- Lower-value transactions should not automatically be considered low risk.
+- Repeated transaction patterns may deserve further investigation.
+- Transaction amount and timing can contribute to fraud analysis, but should be evaluated alongside additional customer and transaction-level information.
