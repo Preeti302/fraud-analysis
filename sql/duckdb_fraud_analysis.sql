@@ -119,3 +119,66 @@ SELECT
 FROM credit_card_transactions
 GROUP BY Class
 ORDER BY Class;
+
+
+-- =====================================================
+-- SECTION 3: INTERMEDIATE SQL ANALYSIS
+-- =====================================================
+
+-- 3.1 Investigate identical transaction records
+
+SELECT
+    Time,
+    Amount,
+    Class,
+    COUNT(*) AS transaction_count
+FROM credit_card_transactions
+GROUP BY Time, Amount, Class
+HAVING COUNT(*) > 1
+ORDER BY transaction_count DESC;
+
+
+-- 3.2 Retrieve previous transaction amount using LAG()
+
+SELECT
+    Time,
+    Amount,
+    Class,
+    LAG(Amount) OVER (
+        ORDER BY Time
+    ) AS previous_amount
+FROM credit_card_transactions
+ORDER BY Time
+LIMIT 20;
+
+
+-- 3.3 Calculate time difference between consecutive transactions
+
+SELECT
+    Time AS current_time,
+    Amount,
+    Class,
+    LAG(Time) OVER (
+        ORDER BY Time
+    ) AS previous_time,
+    Time - LAG(Time) OVER (
+        ORDER BY Time
+    ) AS time_difference_seconds
+FROM credit_card_transactions
+ORDER BY Time
+LIMIT 20;
+
+
+-- 3.4 Rank transactions by transaction amount
+
+SELECT
+    Time,
+    Amount,
+    Class,
+    RANK() OVER (
+        ORDER BY Amount DESC
+    ) AS transaction_rank
+FROM credit_card_transactions
+ORDER BY Amount DESC
+LIMIT 20;
+
